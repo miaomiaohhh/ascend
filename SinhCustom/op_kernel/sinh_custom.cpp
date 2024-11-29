@@ -5,7 +5,7 @@ constexpr int32_t BUFFER_NUM = 2;
 class KernelSinh {
 public:
     __aicore__ inline KernelSinh() {}
-    __aicore__ inline void Init(GM_ADDR xGm, GM_ADDR yGm, uint32_t tileNum, uint32_t totalLength/* 开发者填充参数列表 */)
+    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y,uint32_t totalLength,  uint32_t tileNum/* 开发者填充参数列表 */)
     {
         //考生补充初始化代码
         ASSERT(GetBlockNum()!=0 &&"block dim can not be zero!");
@@ -34,7 +34,7 @@ private:
     {
         //考生补充算子代码
         LocalTenseor<DTYPE_X> xLocal = inQueueX.AllocTensor<DTYPE_X>();
-        DataCopy(xLocal,xGm[progress*this->tilelength], this->tileLength);
+        DataCopy(xLocal,xGm[progress*this->tileLength], this->tileLength);
         inQueueX.EnQue(xLocal);
     }
     __aicore__ inline void Compute(int32_t progress)
@@ -43,7 +43,7 @@ private:
         LocalTensor<half> xLocal = inQueueX.DeQue<half>();
         LocalTensor<half> yLocal = outQueueY.AllocTensor<half>();
         Exp(xLocal,xLocal,this->tileLength);
-        Reciprocal(yLocal,xLocal,this->tilelength):
+        Reciprocal(yLocal,xLocal,this->tileLength):
         Sub(yLocal,xLocal,yLocal,this->tileLength);
         Muls(yLocal,yLocal,(half)0.5,this->tileLength):
         outQueueY.EnQue<half>(yLocal);
