@@ -8,17 +8,6 @@ static ge::graphStatus TilingFunc(gert::TilingContext* context)
 {
     SinhCustomTilingData tiling;
     //考生自行填充
-    const uint32_t BLOCK_DIM = 8;
-    const uint32_t TILE_NUM = 8;
-    uint32_t totalLength = context->GetInputShape(0)->GetOriginShape().GetShapeSize();
-    context->SetBlockDim(BLOCK_DIM);
-    tiling.set_totalLength(totalLength);
-    tiling.set_tileNum(TILE_NUM);
-    tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
-    context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
-    size_t *currentWorkspace = context->GetWorkspaceSizes(1);
-    currentWorkspace[0] = 0;
-    return ge::GRAPH_SUCCESS;
 }
 }
 
@@ -54,7 +43,7 @@ public:
 
         this->AICore()
             .SetTiling(optiling::TilingFunc);
-        this->AICore().AddConfig("ascend910b");
+        this->AICore().AddConfig("ascend310b");
     }
 };
 

@@ -6,10 +6,10 @@
 #include "data_utils.h"
 #ifndef __CCE_KT_TEST__
 #include "acl/acl.h"
-extern void add_custom_do(uint32_t coreDim, void* l2ctrl, void* stream, uint8_t* x, uint8_t* y, uint8_t* z);
+extern void add_custom_do(uint32_t coreDim, void* l2ctrl, void* stream, uint8_t* x, uint8_t* z);
 #else
 #include "tikicpulib.h"
-extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z);
+extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR z);
 #endif
 
 int32_t main(int32_t argc, char* argv[])
@@ -27,7 +27,7 @@ int32_t main(int32_t argc, char* argv[])
     ReadFile("./input/input_y.bin", inputByteSize, y, inputByteSize);
 
     AscendC::SetKernelMode(KernelMode::AIV_MODE);
-    ICPU_RUN_KF(add_custom, blockDim, x, y, z); // use this macro for cpu debug
+    ICPU_RUN_KF(add_custom, blockDim, x, z); // use this macro for cpu debug
 
     WriteFile("./output/output_z.bin", z, outputByteSize);
 
@@ -59,7 +59,7 @@ int32_t main(int32_t argc, char* argv[])
     CHECK_ACL(aclrtMemcpy(xDevice, inputByteSize, xHost, inputByteSize, ACL_MEMCPY_HOST_TO_DEVICE));
     CHECK_ACL(aclrtMemcpy(yDevice, inputByteSize, yHost, inputByteSize, ACL_MEMCPY_HOST_TO_DEVICE));
 
-    add_custom_do(blockDim, nullptr, stream, xDevice, yDevice, zDevice);
+    add_custom_do(blockDim, nullptr, stream, xDevice, zDevice);
     CHECK_ACL(aclrtSynchronizeStream(stream));
 
     CHECK_ACL(aclrtMemcpy(zHost, outputByteSize, zDevice, outputByteSize, ACL_MEMCPY_DEVICE_TO_HOST));

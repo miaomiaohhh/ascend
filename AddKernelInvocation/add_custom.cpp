@@ -22,7 +22,7 @@ public:
         xGm.SetGlobalBuffer((__gm__ half*)x + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
         yGm.SetGlobalBuffer((__gm__ half*)y + BLOCK_LENGTH * GetBlockIdx(), BLOCK_LENGTH);
         pipe.InitBuffer(inQueueX, BUFFER_NUM, TILE_LENGTH * sizeof(half));
-        pipe.InitBuffer(inQueueY, BUFFER_NUM, TILE_LENGTH * sizeof(half));
+        pipe.InitBuffer(outQueueY, BUFFER_NUM, TILE_LENGTH * sizeof(half));
     }
     __aicore__ inline void Process()
     {
@@ -68,7 +68,7 @@ private:
     GlobalTensor<half> yGm;
 };
 
-extern "C" __global__ __aicore__ void sinh_custom(GM_ADDR x, GM_ADDR y)
+extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y)
 {
     KernelSinh op;
     op.Init(x, y);
@@ -77,8 +77,8 @@ extern "C" __global__ __aicore__ void sinh_custom(GM_ADDR x, GM_ADDR y)
 
 #ifndef __CCE_KT_TEST__
 // call of kernel function
-void sinh_custom_do(uint32_t blockDim, void* l2ctrl, void* stream, uint8_t* x, uint8_t* y)
+void add_custom_do(uint32_t blockDim, void* l2ctrl, void* stream, uint8_t* x, uint8_t* y)
 {
-    sinh_custom<<<blockDim, l2ctrl, stream>>>(x, y);
+    add_custom<<<blockDim, l2ctrl, stream>>>(x, y);
 }
 #endif
