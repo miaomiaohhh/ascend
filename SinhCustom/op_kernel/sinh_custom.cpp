@@ -55,7 +55,7 @@ private:
     {
         //考生补充算子代码
         LocalTensor<half> yLocal = outQueueY.DeQue<half>();
-        DataCopy(yGm[progress * this->tileLength], yLocal, TILE_LENGTH);
+        DataCopy(yGm[progress * this->tileLength], yLocal, this->tileLength);
         outQueueY.FreeTensor(yLocal);
     }
 
